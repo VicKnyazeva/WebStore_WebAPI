@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 using WebStore.Domain.Entities.Identity;
 using WebStore.Models;
-using WebStore.Services.Interfaces;
+using WebStore.Interfaces.Services;
 using WebStore.ViewModels;
 
 namespace WebStore.Controllers

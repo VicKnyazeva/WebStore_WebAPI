@@ -14,7 +14,7 @@ using WebStore.Domain.Entities.Identity;
 using WebStore.Services.InCookies;
 using WebStore.Services.InMemory;
 using WebStore.Services.InSQL;
-using WebStore.Services.Interfaces;
+using WebStore.Interfaces.Services;
 
 namespace WebStore
 {

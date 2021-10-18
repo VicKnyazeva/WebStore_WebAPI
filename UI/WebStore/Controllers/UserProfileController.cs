@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using WebStore.Domain.ViewModels;
-using WebStore.Services.Interfaces;
+using WebStore.Interfaces.Services;
 
 namespace WebStore.Controllers
 {

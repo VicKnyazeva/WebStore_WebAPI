@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using WebStore.Models;
 
-namespace WebStore.Services.Interfaces
+namespace WebStore.Interfaces.Services
 {
     public interface IEmployeesData
     {
