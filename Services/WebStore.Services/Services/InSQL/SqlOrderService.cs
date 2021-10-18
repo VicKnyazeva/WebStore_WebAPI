@@ -12,7 +12,7 @@ using WebStore.Domain.Entities.Orders;
 using WebStore.Interfaces.Services;
 using WebStore.ViewModels;
 
-namespace WebStore.Services.InSQL
+namespace WebStore.Services.Services.InSQL
 {
     public class SqlOrderService : IOrderService
     {

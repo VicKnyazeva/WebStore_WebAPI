@@ -4,11 +4,11 @@ using System.Linq;
 
 using Microsoft.Extensions.Logging;
 
-using WebStore.Data;
+using WebStore.Services.Data;
 using WebStore.Models;
 using WebStore.Interfaces.Services;
 
-namespace WebStore.Services.InMemory
+namespace WebStore.Services.Services.InMemory
 {
     public class InMemoryEmployeesData : IEmployeesData
     {

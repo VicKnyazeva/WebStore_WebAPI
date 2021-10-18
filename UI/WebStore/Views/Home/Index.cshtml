@@ -1,5 +1,5 @@
 ﻿@using WebStore.Interfaces.Services
-@using WebStore.Infrastructure.Mapping
+@using WebStore.Services.Mapping
 @inject IProductData ProductData
 @{
     var products = ProductData.GetProducts().Take(6).ToView();

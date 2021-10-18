@@ -9,11 +9,11 @@ using Newtonsoft.Json;
 
 using WebStore.Domain;
 using WebStore.Domain.Entities;
-using WebStore.Infrastructure.Mapping;
+using WebStore.Services.Mapping;
 using WebStore.Interfaces.Services;
 using WebStore.ViewModels;
 
-namespace WebStore.Services.InCookies
+namespace WebStore.Services.Services.InCookies
 {
     public class InCookiesCartService : ICartService
     {
