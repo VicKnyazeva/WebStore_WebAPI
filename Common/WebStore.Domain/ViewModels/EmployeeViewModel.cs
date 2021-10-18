@@ -2,9 +2,10 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-using WebStore.Models;
-using WebStore.Services;
 using Microsoft.AspNetCore.Mvc;
+
+using WebStore.Domain;
+using WebStore.Models;
 
 namespace WebStore.ViewModels
 {
