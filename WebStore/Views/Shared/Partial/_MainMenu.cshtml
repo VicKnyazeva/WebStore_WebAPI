@@ -1,0 +1,21 @@
+﻿<div class="mainmenu pull-left">
+    <ul class="nav navbar-nav collapse navbar-collapse">
+        <li><a asp-controller="Home" asp-action="Index" class="active">Home</a></li>
+        <li class="dropdown">
+            <a href="#">Магазин<i class="fa fa-angle-down"></i></a>
+            <ul role="menu" class="sub-menu">
+                <li><a asp-controller="Catalog" asp-action="Index">Каталог</a></li>
+            </ul>
+        </li>
+        <li class="dropdown">
+            <a href="#">Блог<i class="fa fa-angle-down"></i></a>
+            <ul role="menu" class="sub-menu">
+                <li><a asp-controller="Blogs" asp-action="">Список блогов</a></li>
+                <li><a asp-controller="Blogs" asp-action="Single" asp-route-id="0">Блог магазина</a></li>
+            </ul>
+        </li>
+        @*<li><a asp-controller="Home" asp-action="Error">404</a></li>*@
+        <li><a asp-controller="Home" asp-action="Contacts">Контакты</a></li>
+        <li><a asp-controller="Employees" asp-action="Index">Сотрудники</a></li>
+    </ul>
+</div>
