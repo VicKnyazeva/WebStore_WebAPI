@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebStore.WebAPI.Controllers
 {
-    //class TestEntity
-    //{
-    //    public int Id { get; set; }
-    //    public string Value { get; set; }
-    //}
-
 
     [Route("api/[controller]")]
     [ApiController]
@@ -45,33 +36,33 @@ namespace WebStore.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add([FromBody] string Value)
+        public IActionResult Add([FromBody] string value)
         {
             var id = _Values.Count == 0 ? 1 : _Values.Keys.Max() + 1;
-            _Values[id] = Value;
+            _Values[id] = value;
 
             var r = CreatedAtAction(nameof(GetById), new { id = id }, _Values[id]);
             return r;
         }
 
-        [HttpPut("{Id}")]
-        public IActionResult Replace(int Id, [FromBody] string value)
+        [HttpPut("{id}")]
+        public IActionResult Replace(int id, [FromBody] string value)
         {
-            if (!_Values.ContainsKey(Id))
+            if (!_Values.ContainsKey(id))
                 return NotFound();
 
-            _Values[Id] = value;
+            _Values[id] = value;
 
             return Ok();
         }
 
-        [HttpDelete("{Id}")]
-        public IActionResult Delete(int Id)
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
         {
-            if (!_Values.ContainsKey(Id))
+            if (!_Values.ContainsKey(id))
                 return NotFound();
 
-            _Values.Remove(Id);
+            _Values.Remove(id);
             return Ok();
         }
     }
