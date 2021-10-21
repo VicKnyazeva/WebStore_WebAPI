@@ -29,7 +29,8 @@
                         <td>
                             <a asp-controller="Employees" asp-action="Details" asp-route-id="@employee.Id"><i class="fa fa-info"></i></a>
                             @if (User.IsInRole(Role.Administrators)) { 
-                            @:|<a asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id">Редактировать</a> |
+                            @:|
+                            <a asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id">Редактировать</a>@: |
                             <a asp-controller="Employees" asp-action="Delete" asp-route-id="@employee.Id" class="text-danger">Удалить</a>
                             <form asp-action="DeleteConfirmed" asp-route-id="@employee.Id">
                                 <input type="submit" value="Delete" class="btn btn-danger" />
