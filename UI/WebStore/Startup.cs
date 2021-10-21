@@ -30,32 +30,6 @@ namespace WebStore
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var database_type = Configuration["Database"];
-
-            switch (database_type)
-            {
-
-            case "SqlServer":
-                services.AddDbContext<WebStoreDB>(opt =>
-                    opt.UseSqlServer(Configuration.GetConnectionString(database_type)));
-                break;
-
-            case "Sqlite":
-                services.AddDbContext<WebStoreDB>(opt =>
-                    opt.UseSqlite(Configuration.GetConnectionString(database_type),
-                        o => o.MigrationsAssembly("WebStore.DAL.Sqlite")));
-                break;
-
-            case "InMemory":
-                services.AddDbContext<WebStoreDB>(opt => opt.UseInMemoryDatabase("WebStore.db"));
-                break;
-
-            default: 
-                throw new InvalidOperationException($"Тип БД {database_type} не поддерживается");
-            }
-
-
-
 
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<WebStoreDB>()
