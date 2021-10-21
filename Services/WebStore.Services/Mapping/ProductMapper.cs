@@ -2,7 +2,7 @@
 using System.Linq;
 
 using WebStore.Domain.Entities;
-using WebStore.ViewModels;
+using WebStore.Domain.ViewModels;
 
 namespace WebStore.Services.Mapping
 {

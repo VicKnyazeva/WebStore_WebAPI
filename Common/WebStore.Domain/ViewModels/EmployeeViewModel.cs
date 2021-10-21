@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebStore.Domain;
 using WebStore.Models;
 
-namespace WebStore.ViewModels
+namespace WebStore.Domain.ViewModels
 {
     public class EmployeeViewModel
     {

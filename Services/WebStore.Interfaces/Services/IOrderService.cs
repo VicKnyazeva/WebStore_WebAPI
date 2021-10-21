@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 
 using WebStore.Domain.Entities.Orders;
-using WebStore.ViewModels;
+using WebStore.Domain.ViewModels;
 
 namespace WebStore.Interfaces.Services
 {
