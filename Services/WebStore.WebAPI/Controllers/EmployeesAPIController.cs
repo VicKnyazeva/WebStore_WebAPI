@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
+using WebStore.Interfaces;
 using WebStore.Interfaces.Services;
 using WebStore.Models;
 
 namespace WebStore.WebAPI.Controllers
 {
-    [Route("api/employees")]
+    [Route(WebAPIAddresses.Employees)]
     [ApiController]
     public class EmployeesAPIController : ControllerBase
     {
