@@ -44,9 +44,9 @@ namespace WebStore.WebAPI
                 throw new InvalidOperationException($"Тип БД {databaseType} не поддерживается");
             }
 
-            //services.AddScoped<WebStoreDbInitializer>();
+            services.AddScoped<WebStoreDbInitializer>();
 
-            services.AddIdentity<User, Role>( /*opt => { opt. }*/)
+            services.AddIdentity<User, Role>()
                .AddEntityFrameworkStores<WebStoreDB>()
                .AddDefaultTokenProviders();
 
