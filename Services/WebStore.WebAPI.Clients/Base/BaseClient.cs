@@ -1,10 +1,11 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace WebStore.WebAPI.Clients.Base
 {
-    public abstract class BaseClient
+    public abstract class BaseClient : IDisposable
     {
         protected HttpClient Http { get; }
         protected string Address { get; }
@@ -19,7 +20,7 @@ namespace WebStore.WebAPI.Clients.Base
         protected async Task<T> GetAsync<T>(string url)
         {
             var response = await Http.GetAsync(url).ConfigureAwait(false);
-            
+
             return await response
                .EnsureSuccessStatusCode()
                .Content
@@ -48,5 +49,22 @@ namespace WebStore.WebAPI.Clients.Base
             return response;
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        private bool _Disposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_Disposed)
+                return;
+
+            _Disposed = true;
+
+            if (disposing)
+            {
+            }
+        }
     }
 }
