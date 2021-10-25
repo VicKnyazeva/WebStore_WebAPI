@@ -1,5 +1,6 @@
 
 using System;
+using System.IO;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -77,6 +78,21 @@ namespace WebStore.WebAPI
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebStore.WebAPI", Version = "v1" });
+                
+                const string apiXml = "WebStore.WebAPI.xml";
+                const string domainXml = "WebStore.Domain.xml";
+                const string debugPath = "bin/debug/net5.0";
+
+                if(File.Exists(apiXml))
+                    c.IncludeXmlComments(apiXml);
+                else if(File.Exists(Path.Combine(debugPath, apiXml)))
+                    c.IncludeXmlComments(Path.Combine(debugPath, apiXml));
+
+                if (File.Exists(domainXml))
+                    c.IncludeXmlComments(domainXml);
+                else if (File.Exists(Path.Combine(debugPath, domainXml)))
+                    c.IncludeXmlComments(Path.Combine(debugPath, domainXml));
+
             });
         }
 
