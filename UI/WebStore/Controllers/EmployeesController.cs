@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using WebStore.Domain.Entities.Identity;
-using WebStore.Models;
+using WebStore.Domain.ViewModels;
 using WebStore.Interfaces.Services;
-using WebStore.ViewModels;
+using WebStore.Models;
 
 namespace WebStore.Controllers
 {

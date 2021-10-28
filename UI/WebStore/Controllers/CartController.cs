@@ -1,11 +1,10 @@
-﻿
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using WebStore.Domain.ViewModels;
 using WebStore.Interfaces.Services;
-using WebStore.ViewModels;
 
 namespace WebStore.Controllers
 {

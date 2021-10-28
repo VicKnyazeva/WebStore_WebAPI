@@ -9,13 +9,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using WebStore.DAL.Context;
-using WebStore.Services.Data;
 using WebStore.Domain.Entities.Identity;
+using WebStore.Interfaces.Services;
+using WebStore.Interfaces.TestAPI;
+using WebStore.Services.Data;
 using WebStore.Services.Services.InCookies;
 using WebStore.Services.Services.InMemory;
 using WebStore.Services.Services.InSQL;
-using WebStore.Interfaces.Services;
-using WebStore.Interfaces.TestAPI;
+using WebStore.WebAPI.Clients.Employees;
+using WebStore.WebAPI.Clients.Orders;
+using WebStore.WebAPI.Clients.Products;
 using WebStore.WebAPI.Clients.Values;
 
 namespace WebStore
@@ -23,6 +26,7 @@ namespace WebStore
     public class Startup
     {
         public IConfiguration Configuration { get; set; }
+
         public Startup(IConfiguration Configuration)
         {
             this.Configuration = Configuration;
@@ -34,7 +38,6 @@ namespace WebStore
 
             switch (database_type)
             {
-
             case "SqlServer":
                 services.AddDbContext<WebStoreDB>(opt =>
                     opt.UseSqlServer(Configuration.GetConnectionString(database_type)));
@@ -46,24 +49,17 @@ namespace WebStore
                         o => o.MigrationsAssembly("WebStore.DAL.Sqlite")));
                 break;
 
-            case "InMemory":
-                services.AddDbContext<WebStoreDB>(opt => opt.UseInMemoryDatabase("WebStore.db"));
-                break;
+            default: throw new InvalidOperationException($"Тип БД {database_type} не поддерживается");
 
-            default: 
-                throw new InvalidOperationException($"Тип БД {database_type} не поддерживается");
             }
 
-
-
-
             services.AddIdentity<User, Role>()
-                .AddEntityFrameworkStores<WebStoreDB>()
-                .AddDefaultTokenProviders();
+               .AddEntityFrameworkStores<WebStoreDB>()
+               .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(opt =>
             {
-#if DEBUG
+#if true
                 opt.Password.RequireDigit = false;
                 opt.Password.RequireLowercase = false;
                 opt.Password.RequireUppercase = false;
@@ -72,7 +68,7 @@ namespace WebStore
                 opt.Password.RequiredUniqueChars = 3;
 #endif
                 opt.User.RequireUniqueEmail = false;
-                opt.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+                opt.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ1234567890";
 
                 opt.Lockout.AllowedForNewUsers = false;
                 opt.Lockout.MaxFailedAccessAttempts = 10;
@@ -81,7 +77,7 @@ namespace WebStore
 
             services.ConfigureApplicationCookie(opt =>
             {
-                opt.Cookie.Name = "WebStore";
+                opt.Cookie.Name = "GB.WebStore";
                 opt.Cookie.HttpOnly = true;
                 opt.ExpireTimeSpan = TimeSpan.FromDays(10);
 
@@ -94,13 +90,16 @@ namespace WebStore
 
             services.AddTransient<WebStoreDbInitializer>();
 
-            services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
-            services.AddScoped<IProductData, SqlProductData>();
+            //services.AddSingleton<IEmployeesData, InMemoryEmployeesData>();
+            //services.AddScoped<IProductData, SqlProductData>();
             services.AddScoped<ICartService, InCookiesCartService>();
-            services.AddScoped<IOrderService, SqlOrderService>();
+            //services.AddScoped<IOrderService, SqlOrderService>();
 
-            services.AddHttpClient<IValuesService, ValuesClient>(client => 
-            client.BaseAddress = new (Configuration["WebAPI"]));
+            services.AddHttpClient("WebStoreWebAPI", client => client.BaseAddress = new(Configuration["WebAPI"]))
+                .AddTypedClient<IValuesService, ValuesClient>()
+                .AddTypedClient<IEmployeesData, EmployeesClient>()
+                .AddTypedClient<IProductData, ProductsClient>()
+                .AddTypedClient<IOrderService, OrdersClient>();
 
             services.AddControllersWithViews().
                 AddRazorRuntimeCompilation();
