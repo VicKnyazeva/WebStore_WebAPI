@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 using WebStore.Domain.Entities.Identity;
 using WebStore.ViewModels.Identity;
@@ -13,11 +14,13 @@ namespace WebStore.Controllers
     public class AccountController : Controller
     {
         private readonly SignInManager<User> _SignInManager;
+        private readonly ILogger<AccountController> _Logger;
         private readonly UserManager<User> _UserManager;
-        public AccountController(UserManager<User> UserManager, SignInManager<User> SignInManager)
+        public AccountController(UserManager<User> UserManager, SignInManager<User> SignInManager, ILogger<AccountController> Logger)
         {
             _UserManager = UserManager;
             _SignInManager = SignInManager;
+            _Logger = Logger;
         }
 
         #region Register
