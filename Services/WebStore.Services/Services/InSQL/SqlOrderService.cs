@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 using WebStore.DAL.Context;
 using WebStore.Domain.Entities.Identity;
@@ -18,11 +19,13 @@ namespace WebStore.Services.Services.InSQL
     {
         private readonly WebStoreDB _db;
         private UserManager<User> _UserManager;
+        private readonly ILogger<SqlOrderService> _Logger;
 
-        public SqlOrderService(WebStoreDB db, UserManager<User> UserManager)
+        public SqlOrderService(WebStoreDB db, UserManager<User> UserManager, ILogger<SqlOrderService> Logger)
         {
             _db = db;
             _UserManager = UserManager;
+            _Logger = Logger;
         }
 
         public async Task<Order> CreateOrder(string UserName, CartViewModel Cart, OrderViewModel OrderModel)
@@ -32,41 +35,47 @@ namespace WebStore.Services.Services.InSQL
             if (user is null)
                 throw new InvalidOperationException($"Пользователь {UserName} не найден");
 
-            await using var transaction = await _db.Database.BeginTransactionAsync();
-
-            var order = new Order
+            using(_Logger.BeginScope("Формирование заказа для {0}", UserName))
             {
-                User = user,
-                Address = OrderModel.Address,
-                Phone = OrderModel.Phone,
-                Description = OrderModel.Description,
-            };
+                await using var transaction = await _db.Database.BeginTransactionAsync();
 
-            var productIds = Cart.Items.Select(item => item.Product.Id).ToArray();
-
-            var cartProducts = await _db.Products
-               .Where(p => productIds.Contains(p.Id))
-               .ToArrayAsync();
-
-            order.Items = Cart.Items.Join(
-                cartProducts,
-                cartItem => cartItem.Product.Id,
-                cartProduct => cartProduct.Id,
-                (cartItem, cartProduct) => new OrderItem
+                var order = new Order
                 {
-                    Order = order,
-                    Product = cartProduct,
-                    Price = cartProduct.Price,
-                    Quantity = cartItem.Quantity,
-                }).ToArray();
+                    User = user,
+                    Address = OrderModel.Address,
+                    Phone = OrderModel.Phone,
+                    Description = OrderModel.Description,
+                };
 
-            await _db.Orders.AddAsync(order);
+                var productIds = Cart.Items.Select(item => item.Product.Id).ToArray();
 
-            await _db.SaveChangesAsync();
+                var cartProducts = await _db.Products
+                   .Where(p => productIds.Contains(p.Id))
+                   .ToArrayAsync();
 
-            await transaction.CommitAsync();
+                order.Items = Cart.Items.Join(
+                    cartProducts,
+                    cartItem => cartItem.Product.Id,
+                    cartProduct => cartProduct.Id,
+                    (cartItem, cartProduct) => new OrderItem
+                    {
+                        Order = order,
+                        Product = cartProduct,
+                        Price = cartProduct.Price,
+                        Quantity = cartItem.Quantity,
+                    }).ToArray();
 
-            return order;
+                await _db.Orders.AddAsync(order);
+
+                await _db.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+
+                _Logger.LogInformation("Заказ id: {0} успешно сформирован для пользователя {1}", order.Id, UserName);
+
+                return order;
+            }
         }
 
         public async Task<Order> GetOrderById(int id)
