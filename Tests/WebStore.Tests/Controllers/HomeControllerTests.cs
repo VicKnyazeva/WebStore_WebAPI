@@ -65,7 +65,7 @@ namespace WebStore.Tests.Controllers
         [DataRow("QWE")]
         public void Status_with_id_123_Returns_View(string id)
         {
-            var expectedContent = "Status --- " + id;
+            var expectedContent = "Status--- " + id;
             var controller = new HomeController();
 
             var result = controller.Status(id);
