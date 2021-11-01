@@ -24,11 +24,14 @@ namespace WebStore.Controllers
 
         public IActionResult Status(string id)
         {
-            return id switch
+            if (id is null)
+                throw new ArgumentNullException(nameof(id));
+
+            switch (id)
             {
-                "404" => View("Error404"),
-                _ => Content($"Status code: {id}"),
-            };
+                default: return Content($"Status --- {id}");
+                case "404": return View("Error404");
+            }
         }
     }
 }
