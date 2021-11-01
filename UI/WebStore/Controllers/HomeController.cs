@@ -1,4 +1,5 @@
 ﻿
+using System;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebStore.Controllers
@@ -9,6 +10,9 @@ namespace WebStore.Controllers
         {
             return View();
         }
+
+        public IActionResult Exception(string Message) => throw new InvalidOperationException(Message ?? "Произошла ошибка в контроллере!");
+
         public IActionResult Contacts()
         {
             return View();

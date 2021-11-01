@@ -33,6 +33,9 @@ namespace WebStore.Services.Services.InMemory
 
             employee.Id = ++_CurrentMaxId;
             TestData.Employees.Add(employee);
+
+            _Logger.LogInformation("Сотрудник {0} успешно добавлен", employee);
+
             return employee.Id;
         }
 
@@ -40,9 +43,14 @@ namespace WebStore.Services.Services.InMemory
         {
             var db_employee = GetById(id);
             if (db_employee is null)
+            {
+                _Logger.LogInformation("При попытке удаления информация о сотруднике {0} не найдена", db_employee);
                 return false;
+            }    
 
             TestData.Employees.Remove(db_employee);
+            _Logger.LogInformation("Информация о сотруднике {0} успешно удалена", db_employee);
+
             return true;
         }
 
@@ -72,6 +80,8 @@ namespace WebStore.Services.Services.InMemory
             db_employee.FirstName = employee.FirstName;
             db_employee.Patronymic = employee.Patronymic;
             db_employee.BirthDate = employee.BirthDate;
+
+            _Logger.LogInformation("Информация о сотруднике {0} успешно обновлена", employee);
         }
     }
 }

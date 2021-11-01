@@ -31,5 +31,10 @@ namespace WebStore.Models
         /// Дата рождения
         /// </summary>
         public DateTime BirthDate { get; set; }
+
+        public override string ToString()
+        {
+            return $"[{Id}] {LastName} {FirstName} {Patronymic} {BirthDate}";
+        }
     }
 }

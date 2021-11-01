@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.Logging;
 using WebStore.Interfaces;
 using WebStore.Interfaces.Services;
 using WebStore.Models;
@@ -15,10 +15,12 @@ namespace WebStore.WebAPI.Controllers
     public class EmployeesAPIController : ControllerBase
     {
         private readonly IEmployeesData _EmployeesData;
+        private readonly ILogger<EmployeesAPIController> _Logger;
 
-        public EmployeesAPIController(IEmployeesData EmployeesData)
+        public EmployeesAPIController(IEmployeesData EmployeesData, ILogger<EmployeesAPIController> Logger)
         {
             _EmployeesData = EmployeesData;
+            _Logger = Logger;
         }
 
         /// <summary>
@@ -29,6 +31,7 @@ namespace WebStore.WebAPI.Controllers
         public IActionResult Get()
         {
             var employees = _EmployeesData.GetAll();
+            _Logger.LogInformation("Получение списка всех сотрудников");
             return Ok(employees);
         }
 
@@ -44,7 +47,10 @@ namespace WebStore.WebAPI.Controllers
         {
             var employee = _EmployeesData.GetById(id);
             if (employee is null)
+            {
+                _Logger.LogWarning("Пользователь с id {0} не найден", id);
                 return NotFound();
+            }
 
             return Ok(employee);
         }
@@ -61,6 +67,7 @@ namespace WebStore.WebAPI.Controllers
         public IActionResult Add(Employee employee)
         {
             var id = _EmployeesData.Add(employee);
+            _Logger.LogInformation("Пользователь успешно создан ");
             return CreatedAtAction(nameof(GetById), new { id }, employee);
         }
 
@@ -68,7 +75,16 @@ namespace WebStore.WebAPI.Controllers
         public IActionResult Delete(int id)
         {
             var result = _EmployeesData.Delete(id);
-            return result ? Ok(true) : NotFound(false);
+            if (result)
+            {
+                _Logger.LogInformation("Пользователь с id {0} успешно удален из системы", id);
+                return Ok(true);
+            }
+            else
+            {
+                _Logger.LogWarning("Пользователь с id {0} в системе не найден", id);
+                return NotFound(false);
+            }
         }
     }
 }
