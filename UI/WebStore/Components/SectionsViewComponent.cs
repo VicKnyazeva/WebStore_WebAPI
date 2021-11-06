@@ -1,55 +1,75 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.AspNetCore.Mvc;
 
 using WebStore.Domain.ViewModels;
 using WebStore.Interfaces.Services;
+using WebStore.ViewModels;
 
 namespace WebStore.Components
 {
     public class SectionsViewComponent : ViewComponent
     {
         private readonly IProductData _ProductData;
-        public SectionsViewComponent(IProductData ProductData)
+
+        public SectionsViewComponent(IProductData ProductData) => _ProductData = ProductData;
+
+        public IViewComponentResult Invoke(string SectionId)
         {
-            _ProductData = ProductData;
+            var sectionId = int.TryParse(SectionId, out var id) ? id : (int?)null;
+
+            var sections = GetSections(sectionId, out var parentSectionId);
+
+            return View(new SelectableSectionsViewModel
+            {
+                Sections = sections,
+                SectionId = sectionId,
+                ParentSectionId = parentSectionId,
+            });
         }
 
-        public IViewComponentResult Invoke(string SectionId) 
+        private IEnumerable<SectionViewModel> GetSections(int? SectionId, out int? ParentSectionId)
         {
+            ParentSectionId = null;
+
             var sections = _ProductData.GetSections();
 
             var parentSections = sections.Where(s => s.ParentId is null);
 
             var parentSectionsViews = parentSections
-                .Select(s => new SectionViewModel
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    Order = s.Order
-                }).ToList();
+               .Select(s => new SectionViewModel
+               {
+                   Id = s.Id,
+                   Name = s.Name,
+                   Order = s.Order,
+               })
+               .ToList();
 
-            foreach (var parent_section in parentSectionsViews)
+            foreach (var parentSection in parentSectionsViews)
             {
-                var children = sections.Where(s => s.ParentId == parent_section.Id);
+                var childElements = sections.Where(s => s.ParentId == parentSection.Id);
 
-                foreach(var child_section in children)
+                foreach (var childSection in childElements)
                 {
-                    parent_section.ChildSections.Add(new SectionViewModel
+                    if (childSection.Id == SectionId)
+                        ParentSectionId = childSection.ParentId;
+
+                    parentSection.ChildSections.Add(new SectionViewModel
                     {
-                        Id = child_section.Id,
-                        Name = child_section.Name,
-                        Order = child_section.Order,
-                        Parent = parent_section
+                        Id = childSection.Id,
+                        Name = childSection.Name,
+                        Order = childSection.Order,
+                        Parent = parentSection
                     });
                 }
-                parent_section.ChildSections.Sort((a, b) => a.Order.CompareTo(b.Order));
 
+                parentSection.ChildSections.Sort((a, b) => Comparer<int>.Default.Compare(a.Order, b.Order));
             }
 
-            parentSectionsViews.Sort((a, b) => a.Order.CompareTo(b.Order));
+            parentSectionsViews.Sort((a, b) => Comparer<int>.Default.Compare(a.Order, b.Order));
 
-            return View(parentSectionsViews); 
+            return parentSectionsViews;
         }
     }
 }
