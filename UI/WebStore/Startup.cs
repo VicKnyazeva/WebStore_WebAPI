@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,12 +8,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+
+using Polly;
+using Polly.Extensions.Http;
+
 using WebStore.Domain.Entities.Identity;
 using WebStore.Infrastructure.Middleware;
 using WebStore.Interfaces.Services;
 using WebStore.Interfaces.TestAPI;
 using WebStore.Logger;
-using WebStore.Services.Data;
 using WebStore.Services.Services;
 using WebStore.Services.Services.InCookies;
 using WebStore.WebAPI.Clients.Employees;
@@ -76,7 +80,25 @@ namespace WebStore
                 .AddTypedClient<IValuesService, ValuesClient>()
                 .AddTypedClient<IEmployeesData, EmployeesClient>()
                 .AddTypedClient<IProductData, ProductsClient>()
-                .AddTypedClient<IOrderService, OrdersClient>();
+                .AddTypedClient<IOrderService, OrdersClient>()
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))     // Создать кеш HttpClient объектов с очисткой его по времени
+                .AddPolicyHandler(GetRetryPolicy())              // Политика повторных запросов в случае если WebAPI не отвечает
+                .AddPolicyHandler(GetCircuitBreakerPolicy());    // Разрушение потенциальных циклических запросов в большой распределённой системе
+
+            static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int MaxRetryCount = 5, int MaxJitterTime = 1000)
+            {
+                var jitter = new Random();
+                return HttpPolicyExtensions
+                    .HandleTransientHttpError()
+                    .WaitAndRetryAsync(MaxRetryCount, RetryAttempt =>
+                        TimeSpan.FromSeconds(Math.Pow(2, RetryAttempt)) +
+                        TimeSpan.FromMilliseconds(jitter.Next(0, MaxJitterTime)));
+            }
+
+            static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() =>
+                HttpPolicyExtensions
+                    .HandleTransientHttpError()
+                    .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 5, TimeSpan.FromSeconds(30)); ;
 
             services.AddControllersWithViews().
                 AddRazorRuntimeCompilation();
