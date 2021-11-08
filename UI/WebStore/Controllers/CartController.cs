@@ -58,5 +58,28 @@ namespace WebStore.Controllers
             return View();
         }
 
+        #region WebAPI
+
+        public IActionResult GetCartView() => ViewComponent("Cart");
+
+        public IActionResult AddAPI(int Id)
+        {
+            _CartService.Add(Id);
+            return Json(new { Id, message = $"Товар с Id:{Id} добавлен в корзину" });
+        }
+
+        public IActionResult DecrementAPI(int Id)
+        {
+            _CartService.Decrement(Id);
+            return Ok(new { Id, message = $"Товар с Id:{Id} - уменьшено количество на 1" });
+        }
+
+        public IActionResult RemoveAPI(int Id)
+        {
+            _CartService.Remove(Id);
+            return Ok();
+        }
+
+        #endregion
     }
 }
