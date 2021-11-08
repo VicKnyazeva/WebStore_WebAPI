@@ -31,23 +31,31 @@ namespace WebStore.Services.Services.InSQL
                 .FirstOrDefault(p => p.Id == id);
         }
 
-        public IEnumerable<Product> GetProducts(ProductFilter Filter = null)
+        public ProductsPage GetProducts(ProductFilter Filter = null)
         {
-            IQueryable<Product> query = _db.Products.Include(p => p.Brand).Include(p => p.Section);
+            IQueryable<Product> query = _db.Products
+                .Include(p => p.Brand)
+                .Include(p => p.Section);
 
             if (Filter?.Ids?.Length > 0)
-            {
                 query = query.Where(product => Filter.Ids.Contains(product.Id));
-            }
             else
             {
-                if (Filter?.SectionId != null)
-                    query = query.Where(p => p.SectionId == Filter.SectionId);
+                if (Filter?.SectionId is { } sectionId)
+                    query = query.Where(p => p.SectionId == sectionId);
 
-                if (Filter?.BrandId != null)
-                    query = query.Where(p => p.BrandId == Filter.BrandId);
+                if (Filter?.BrandId is { } brandId)
+                    query = query.Where(p => p.BrandId == brandId);
             }
-            return query;
+
+            var totalCount = query.Count();
+
+            if (Filter is { PageSize: > 0 and var pageSize, Page: > 0 and var pageNumber })
+                query = query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize);
+
+            return new(query.AsEnumerable(), totalCount);
         }
 
         public IEnumerable<Section> GetSections()
