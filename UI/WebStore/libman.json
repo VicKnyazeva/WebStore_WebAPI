@@ -17,6 +17,10 @@
     {
       "library": "gmaps.js@0.4.25",
       "destination": "wwwroot/lib/gmaps.js/"
+    },
+    {
+      "library": "jquery-loading-overlay@2.1.7",
+      "destination": "wwwroot/lib/jquery-loading-overlay/"
     }
   ]
 }
