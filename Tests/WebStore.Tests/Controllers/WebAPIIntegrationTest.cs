@@ -11,6 +11,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Moq;
 
+using WebStore.Domain.ViewModels;
+using WebStore.Interfaces.Services;
 using WebStore.Interfaces.TestAPI;
 
 using Assert = Xunit.Assert;
@@ -30,13 +32,17 @@ namespace WebStore.Tests.Controllers
             var valuesServiceMock = new Mock<IValuesService>();
             valuesServiceMock.Setup(s => s.GetAll()).Returns(_ExpectedValues);
 
+            var cartServiceMock = new Mock<ICartService>();
+            cartServiceMock.Setup(c => c.GetViewModel()).Returns(() => new CartViewModel { Items = Enumerable.Empty<(ProductViewModel, int)>() });
+
             _Host = new WebApplicationFactory<Startup>()
-                .WithWebHostBuilder(host => host
-                    .ConfigureServices(services => services
-                        .AddSingleton(valuesServiceMock.Object)));
+               .WithWebHostBuilder(host => host
+                   .ConfigureServices(services => services
+                       .AddSingleton(valuesServiceMock.Object)
+                       .AddSingleton(cartServiceMock.Object)));
         }
 
-        [TestMethod, Timeout(3000), Ignore]
+        [TestMethod]
         public async Task GetValues()
         {
             var client = _Host.CreateClient();
