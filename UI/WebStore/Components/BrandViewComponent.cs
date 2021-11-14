@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.AspNetCore.Mvc;
@@ -12,21 +11,24 @@ namespace WebStore.Components
     public class BrandsViewComponent : ViewComponent
     {
         private readonly IProductData _ProductData;
-        public BrandsViewComponent(IProductData ProductData)
+
+        public BrandsViewComponent(IProductData ProductData) => _ProductData = ProductData;
+
+        //public async Task<IViewComponentResult> InvokeAsync() => View();
+
+        public IViewComponentResult Invoke(string BrandId)
         {
-            _ProductData = ProductData;
+            ViewBag.BrandId = int.TryParse(BrandId, out var id) ? id : (int?)null;
+            return View(GetBrands());
         }
 
-        public IViewComponentResult Invoke() => View(GetBrands());
-
         private IEnumerable<BrandViewModel> GetBrands() =>
-                _ProductData.GetBrands()
+            _ProductData.GetBrands()
                 .OrderBy(b => b.Order)
                 .Select(b => new BrandViewModel
                 {
                     Id = b.Id,
-                    Name = b.Name
+                    Name = b.Name,
                 });
-
     }
 }
