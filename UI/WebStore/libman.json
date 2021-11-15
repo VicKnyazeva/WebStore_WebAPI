@@ -36,6 +36,10 @@
       "files": [
         "jquery.unobtrusive-ajax.min.js"
       ]
+    },
+    {
+      "library": "aspnet-signalr@1.1.4",
+      "destination": "wwwroot/lib/aspnet-signalr/"
     }
   ]
 }
