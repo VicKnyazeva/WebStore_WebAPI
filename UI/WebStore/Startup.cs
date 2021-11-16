@@ -118,7 +118,10 @@ namespace WebStore
             }
 
             app.UseStatusCodePagesWithRedirects("~/home/Status/{0}");
+
+            app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
+            
             app.UseRouting();
 
             app.UseAuthentication();
@@ -132,9 +135,11 @@ namespace WebStore
 
                 endpoints.MapControllerRoute(
                     name: "areas",
-                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                    pattern: "{area:exists}/{controller}/{action=Index}/{id?}"
                 );
                 endpoints.MapDefaultControllerRoute();
+
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }
