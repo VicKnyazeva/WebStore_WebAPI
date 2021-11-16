@@ -135,9 +135,10 @@ namespace WebStore
 
                 endpoints.MapControllerRoute(
                     name: "areas",
-                    pattern: "{area:exists}/{controller}/{action=Index}/{id?}"
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
                 );
-                endpoints.MapDefaultControllerRoute();
+
+                endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
 
                 endpoints.MapFallbackToFile("index.html");
             });
