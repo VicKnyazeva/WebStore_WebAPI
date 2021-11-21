@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Moq;
@@ -58,7 +59,10 @@ namespace WebStore.Tests.Controllers
                    }
                });
 
-            var controller = new CatalogController(productDataMock.Object);
+            var configurationMock = new Mock<IConfiguration>();
+            configurationMock.Setup(c => c["CatalogPageSize"]).Returns("4");
+
+            var controller = new CatalogController(productDataMock.Object, configurationMock.Object);
 
             var result = controller.Details(expectedId);
 

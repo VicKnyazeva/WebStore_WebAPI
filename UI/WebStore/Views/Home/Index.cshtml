@@ -2,7 +2,7 @@
 @using WebStore.Services.Mapping
 @inject IProductData ProductData
 @{
-    var products = ProductData.GetProducts().Take(6).ToView();
+    var products = ProductData.GetProducts().Products.Take(6).ToView();
 }
 <partial name="Partial/_Slider" />
 

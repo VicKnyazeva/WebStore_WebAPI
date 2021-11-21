@@ -18,6 +18,11 @@
 
             <div class="col-sm-9 padding-right">
                 <partial name="Partial/_Products" model="Model.Products" />
+                <pagination page-model="Model.PageViewModel"
+                         page-action="Index"
+                         page-url-SectionId="@Model.SectionId"
+                         page-url-BrandId="@Model.BrandId"
+                         page-url-PageSize="@Context.Request.Query["PageSize"]"></pagination>
             </div>
         </div>
     </div>
