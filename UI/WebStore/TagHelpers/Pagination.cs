@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,8 +14,6 @@ namespace WebStore.TagHelpers
 {
     public class Pagination : TagHelper
     {
-        private readonly IUrlHelperFactory _UrlHelperFactory;
-
         public string PageAction { get; set; }
 
         [HtmlAttributeName(DictionaryAttributePrefix = "page-url-")]
@@ -25,21 +24,18 @@ namespace WebStore.TagHelpers
         [ViewContext, HtmlAttributeNotBound]
         public ViewContext ViewContext { get; set; }
 
-        public Pagination(IUrlHelperFactory UrlHelperFactory) => _UrlHelperFactory = UrlHelperFactory;
-
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             var ul = new TagBuilder("ul");
             ul.AddCssClass("pagination");
 
-            var urlHelper = _UrlHelperFactory.GetUrlHelper(ViewContext);
             for (var i = 1; i <= PageModel.TotalPages; i++)
-                ul.InnerHtml.AppendHtml(CreateElement(i, urlHelper));
+                ul.InnerHtml.AppendHtml(CreateElement(i));
 
             output.Content.AppendHtml(ul);
         }
 
-        private TagBuilder CreateElement(int PageNumber, IUrlHelper Url)
+        private TagBuilder CreateElement(int PageNumber)
         {
             var li = new TagBuilder("li");
             var a = new TagBuilder("a");
@@ -49,9 +45,13 @@ namespace WebStore.TagHelpers
                 li.AddCssClass("active");
             else
             {
-                PageUrlValues["page"] = PageNumber;
-                a.Attributes["href"] = Url.Action(PageAction, PageUrlValues);
+                a.Attributes["href"] = "#";
             }
+
+            PageUrlValues["page"] = PageNumber;
+
+            foreach (var (key, value) in PageUrlValues.Select(v => (v.Key, Value: v.Value?.ToString())).Where(v => v.Value?.Length > 0))
+                a.MergeAttribute($"data-{key}", value);
 
             li.InnerHtml.AppendHtml(a);
             return li;

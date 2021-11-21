@@ -13,6 +13,7 @@ using Polly;
 using Polly.Extensions.Http;
 
 using WebStore.Domain.Entities.Identity;
+using WebStore.Hubs;
 using WebStore.Infrastructure.Middleware;
 using WebStore.Interfaces.Services;
 using WebStore.Interfaces.TestAPI;
@@ -102,6 +103,8 @@ namespace WebStore
 
             services.AddControllersWithViews().
                 AddRazorRuntimeCompilation();
+
+            services.AddSignalR();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
@@ -115,7 +118,10 @@ namespace WebStore
             }
 
             app.UseStatusCodePagesWithRedirects("~/home/Status/{0}");
+
+            app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
+            
             app.UseRouting();
 
             app.UseAuthentication();
@@ -125,11 +131,16 @@ namespace WebStore
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<ChatHub>("/chat");
+
                 endpoints.MapControllerRoute(
                     name: "areas",
                     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
                 );
-                endpoints.MapDefaultControllerRoute();
+
+                endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
+
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }

@@ -52,6 +52,7 @@ namespace WebStore.Services.Services.InSQL
 
             if (Filter is { PageSize: > 0 and var pageSize, Page: > 0 and var pageNumber })
                 query = query
+                    .OrderBy(p => p.Order)
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize);
 

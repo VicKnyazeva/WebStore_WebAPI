@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
 
 using Clients;
 
@@ -10,14 +11,30 @@ namespace WebStore.TestConsole
     {
         static async Task Main(string[] args)
         {
-            var client = new HttpClient()
+            var builder = new HubConnectionBuilder();
+            var connection = builder
+               .WithUrl("http://localhost:5000/chat")
+               .Build();
+
+            using var registration = connection.On<string>("MessageFromClient", OnMessageFromClient);
+
+            Console.WriteLine("Ready for connection");
+            Console.ReadLine();
+
+            await connection.StartAsync();
+
+            Console.WriteLine("Connection established");
+
+            while (true)
             {
-                //BaseAddress = new Uri("http://localhost:5001")
-            };
+                var message = Console.ReadLine();
+                await connection.InvokeAsync("SendMessage", message);
+            }
+        }
 
-            //var api = new WebAPIClient("http://localhost:5001", client);
-
-            //var employee = await api.Employees4Async(2);
+        private static void OnMessageFromClient(string Message)
+        {
+            Console.WriteLine("Message from server: {0}", Message);
         }
     }
 }
